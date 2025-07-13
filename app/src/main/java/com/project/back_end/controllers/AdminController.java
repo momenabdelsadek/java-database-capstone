@@ -1,6 +1,9 @@
 
 package com.project.back_end.controllers;
 
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
 public class AdminController {
 
 // 1. Set Up the Controller Class:
@@ -21,7 +24,4 @@ public class AdminController {
 //    - Delegates authentication logic to the `validateAdmin` method in the service layer.
 //    - Returns a `ResponseEntity` with a `Map` containing login status or messages.
 
-
-
 }
-
