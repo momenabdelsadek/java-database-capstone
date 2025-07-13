@@ -73,10 +73,10 @@ public class Appointment {
 //      - It calculates the end time of the appointment by adding one hour to the start time (appointmentTime).
 //      - It is used to get an estimated appointment end time for display purposes.
 
+    // Returns the end time of the appointment (1 hour after start time)
     @Transient
     public LocalDateTime getEndTime() {
-        LocalDateTime localDateTime;
-        return LocalDateTime.now();
+        return getAppointmentTime().plusHours(1);
     }
 
 // 7. 'getAppointmentDate' method:
@@ -85,10 +85,10 @@ public class Appointment {
 //      - This method extracts only the date part from the appointmentTime field.
 //      - It returns a LocalDate object representing just the date (without the time) of the scheduled appointment.
 
+    // Returns only the date portion of the appointment
     @Transient
     private LocalDate getAppointmentDate() {
-        LocalDate localDate;
-        return LocalDate.now();
+        return getAppointmentTime().toLocalDate();
     }
 
 // 8. 'getAppointmentTimeOnly' method:
@@ -97,10 +97,10 @@ public class Appointment {
 //      - This method extracts only the time part from the appointmentTime field.
 //      - It returns a LocalTime object representing just the time (without the date) of the scheduled appointment.
 
+    // Returns only the time portion of the appointment
     @Transient
     private LocalTime getAppointmentTimeOnly() {
-        LocalTime localTime = LocalTime.now();
-        return localTime;
+        return getAppointmentTime().toLocalTime();
     }
 
 // 9. Constructor(s):
