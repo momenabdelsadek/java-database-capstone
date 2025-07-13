@@ -107,3 +107,76 @@ with search, filter, and modal functionality.
 
  -->
 
+<!-- adminDashboard.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <!-- CSS Styles -->
+    <link rel="stylesheet" th:href="@{/assets/css/adminDashboard.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+
+    <!-- JavaScript Utilities -->
+    <script th:src="@{/js/render.js}" defer></script>
+    <script th:src="@{/js/util.js}" defer></script>
+
+    <!-- Layout Components -->
+    <script th:src="@{/js/components/header.js}" defer></script>
+    <script th:src="@{/js/components/footer.js}" defer></script>
+</head>
+
+<body>
+<!-- Layout Container -->
+<div class="container">
+    <div class="wrapper">
+
+        <!-- Dynamic Header -->
+        <div id="header"></div>
+
+        <!-- Main Dashboard Content -->
+        <main class="main-content">
+            <!-- Search Bar -->
+            <input type="text" id="searchBar" placeholder="Search by doctor name" />
+
+            <!-- Filter Dropdowns -->
+            <div class="filters">
+                <select id="timeFilter">
+                    <option value="">Sort by Time</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+
+                <select id="specialtyFilter">
+                    <option value="">Filter by Specialty</option>
+                    <option value="Cardiologist">Cardiologist</option>
+                    <option value="Dentist">Dentist</option>
+                    <option value="Dermatologist">Dermatologist</option>
+                    <option value="Neurologist">Neurologist</option>
+                    <!-- Add more specialties as needed -->
+                </select>
+            </div>
+
+            <!-- Dynamic Content Area -->
+            <div id="content"></div>
+        </main>
+
+        <!-- Dynamic Footer -->
+        <div id="footer"></div>
+    </div>
+</div>
+
+<!-- Modal for Adding Doctor -->
+<div id="modal" class="modal" style="display: none;">
+    <span id="closeModal" class="close">&times;</span>
+    <div id="modal-body"></div>
+</div>
+
+<!-- Page-Specific JavaScript -->
+<script type="module" src="../js/services/adminDashboard.js" defer></script>
+<script type="module" src="../js/components/doctorCard.js" defer></script>
+</body>
+</html>
+
+

@@ -1,6 +1,6 @@
-/* this is the style sheet file for index.htlm  */
+/* this is the style sheet file for index.html  */
 
-/* 
+/*
 **Global Reset (`*`)**
 
 * Remove all default margin and padding.
@@ -51,3 +51,195 @@
 * Use the same base green background (`#015c5d`) as the default button.
 * On hover, darken the background to deep teal (`#003e3e`) for visual feedback.
  */
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Layout */
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Wrapper */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Heading */
+h2 {
+  font-size: 48px;
+  margin-bottom: 50px;
+  color: #003e3e;
+  font-weight: bold;
+  font-family: 'Alegreya', 'Roboto', sans-serif;
+}
+
+/* Buttons */
+button {
+  background-color: #015c5d;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  width: 200px;
+  margin: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #A62B1F;
+}
+
+/* Dashboard Buttons */
+.dashboard-btn {
+  background-color: #015c5d;
+}
+
+.dashboard-btn:hover {
+  background-color: #003e3e;
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: none; /* initially hidden */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Header */
+#header {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  border-bottom: 1px solid #ccc;
+}
+
+#header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #015c5d;
+}
+
+#header nav a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Footer */
+#footer {
+  background-color: #003e3e;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Form Inputs */
+.input-field,
+.select-dropdown {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.input-field:focus,
+.select-dropdown:focus {
+  outline: none;
+  border-color: #015c5d;
+  box-shadow: 0 0 5px rgba(1, 92, 93, 0.3);
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.checkbox-group label {
+  font-size: 15px;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 600px) {
+  h2 {
+    font-size: 36px;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  #header, #footer {
+    padding: 15px;
+  }
+
+  #header nav a {
+    margin-left: 10px;
+  }
+}
