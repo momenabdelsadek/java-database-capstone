@@ -125,7 +125,7 @@ public class UtilityService {
     public boolean validatePatient(Patient patient) {
         boolean exists = patientRepository.findByEmailOrPhone(patient.getEmail(), patient.getPhone()) != null;
         logger.info("Patient validation result for email: {}, phone: {} - exists: {}", patient.getEmail(), patient.getPhone(), exists);
-        return !exists;
+        return exists;
     }
 
     public ResponseEntity<Map<String, String>> validatePatientLogin(Login login) {
