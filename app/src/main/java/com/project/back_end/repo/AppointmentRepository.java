@@ -23,8 +23,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 // Example: public interface AppointmentRepository extends JpaRepository<Appointment, Long> {}
 
     // 1. Appointments for a doctor in a specific time range (include doctor and availability)
-    @Query("SELECT a.available_times FROM doctor_available_times a " +
-            "WHERE a.doctor_id = :doctorId AND a.available_times BETWEEN :start AND :end")
+    @Query("SELECT a FROM Appointment a " +
+            "LEFT JOIN FETCH a.doctor d " +
+            "WHERE d.id = :doctorId AND a.appointmentTime BETWEEN :start AND :end")
     List<Appointment> findByDoctorIdAndAppointmentTimeBetween(
             @Param("doctorId") Long doctorId,
             @Param("start") LocalDateTime start,
