@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class DoctorService {
 
     private static final Logger logger = LoggerFactory.getLogger(DoctorService.class);
