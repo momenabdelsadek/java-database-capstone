@@ -1,14 +1,31 @@
 package com.project.back_end.services;
 
-public class TokenService {
+import com.project.back_end.repo.AdminRepository;
+import com.project.back_end.repo.DoctorRepository;
+import com.project.back_end.repo.PatientRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+@Component
+
 // 1. **@Component Annotation**
 // The @Component annotation marks this class as a Spring component, meaning Spring will manage it as a bean within its application context.
 // This allows the class to be injected into other Spring-managed components (like services or controllers) where it's needed.
+
+public class TokenService {
 
 // 2. **Constructor Injection for Dependencies**
 // The constructor injects dependencies for `AdminRepository`, `DoctorRepository`, and `PatientRepository`,
 // allowing the service to interact with the database and validate users based on their role (admin, doctor, or patient).
 // Constructor injection ensures that the class is initialized with all required dependencies, promoting immutability and making the class testable.
+
 
 // 3. **getSigningKey Method**
 // This method retrieves the HMAC SHA key used to sign JWT tokens.
@@ -39,5 +56,62 @@ public class TokenService {
 // - The method gracefully handles any errors by returning false if the token is invalid or an exception occurs.
 // This ensures secure access control based on the user's role and their existence in the system.
 
+    private final AdminRepository adminRepository;
+    private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
 
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    public TokenService(AdminRepository adminRepository,
+                        DoctorRepository doctorRepository,
+                        PatientRepository patientRepository) {
+        this.adminRepository = adminRepository;
+        this.doctorRepository = doctorRepository;
+        this.patientRepository = patientRepository;
+    }
+
+    public String generateToken(String identifier) {
+
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + 604800000L); // 7 days
+
+        return Jwts.builder()
+                .setSubject(identifier)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String extractIdentifier(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
+    public boolean validateToken(String token, String user) {
+        try {
+            String identifier = extractIdentifier(token);
+            switch (user.toLowerCase()) {
+                case "admin":
+                    return adminRepository.findByUsername(identifier) != null;
+                case "doctor":
+                    return doctorRepository.findByEmail(identifier) != null;
+                case "patient":
+                    return patientRepository.findByEmail(identifier) != null;
+                default:
+                    return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 }

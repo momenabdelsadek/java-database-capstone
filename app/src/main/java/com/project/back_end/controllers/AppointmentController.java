@@ -1,7 +1,90 @@
 package com.project.back_end.controllers;
 
+import com.project.back_end.models.Appointment;
+import com.project.back_end.services.AppointmentService;
+import com.project.back_end.services.UtilityService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/appointments")
 public class AppointmentController {
+
+    private final AppointmentService appointmentService;
+    private final UtilityService utilityService;
+
+    @Autowired
+    public AppointmentController(AppointmentService appointmentService, UtilityService utilityService) {
+        this.appointmentService = appointmentService;
+        this.utilityService = utilityService;
+    }
+
+    @GetMapping("/{date}/{patientName}/{token}")
+    public ResponseEntity<Map<String, String>> getAppointments(@PathVariable String date,
+                                                               @PathVariable String patientName,
+                                                               @PathVariable String token) {
+        ResponseEntity<Map<String, String>> validationResponse = utilityService.validateToken(token, "doctor");
+        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<>(Map.of("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
+
+        Map<String, Object> appointmentData = appointmentService.getAppointment(patientName, LocalDate.parse(date), token);
+        if (appointmentData == null || appointmentData.isEmpty()) {
+            return new ResponseEntity<>(Map.of("error", "No appointments found"), HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(Map.of("appointments", appointmentData.toString()), HttpStatus.OK);
+    }
+
+    @PostMapping("/{token}")
+    public ResponseEntity<Map<String, String>> bookAppointment(@RequestBody Appointment appointment,
+                                                               @PathVariable String token) {
+        ResponseEntity<Map<String, String>> validationResponse = utilityService.validateToken(token, "patient");
+
+        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<>(Map.of("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
+
+        int validationResult = utilityService.validateAppointment(appointment);
+        if (validationResult == -1) {
+            return new ResponseEntity<>(Map.of("error", "Doctor not found"), HttpStatus.BAD_REQUEST);
+        } else if (validationResult == 0) {
+            return new ResponseEntity<>(Map.of("error", "Time slot unavailable"), HttpStatus.CONFLICT);
+        }
+
+        int booked = appointmentService.bookAppointment(appointment);
+        if (booked==1) {
+            return new ResponseEntity<>(Map.of("message", "Appointment booked successfully"), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(Map.of("error", "Failed to book appointment"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/{token}")
+    public ResponseEntity<Map<String, String>> updateAppointment(@RequestBody Appointment appointment,
+                                                                 @PathVariable String token) {
+        ResponseEntity<Map<String, String>> validationResponse = utilityService.validateToken(token, "patient");
+        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<>(Map.of("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
+
+        return appointmentService.updateAppointment(appointment);
+    }
+
+    @DeleteMapping("/{id}/{token}")
+    public ResponseEntity<Map<String, String>> cancelAppointment(@PathVariable Long id,
+                                                                 @PathVariable String token) {
+        ResponseEntity<Map<String, String>> validationResponse = utilityService.validateToken(token, "patient");
+        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<>(Map.of("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
+        return appointmentService.cancelAppointment(id,"");
+    }
 
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to define it as a REST API controller.

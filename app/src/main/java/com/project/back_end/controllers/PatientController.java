@@ -1,6 +1,92 @@
 package com.project.back_end.controllers;
 
+import com.project.back_end.DTO.Login;
+import com.project.back_end.models.Patient;
+import com.project.back_end.services.PatientService;
+import com.project.back_end.services.UtilityService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/patient")
 public class PatientController {
+
+    private final PatientService patientService;
+    private final UtilityService utilityService;
+
+    @Autowired
+    public PatientController(PatientService patientService, UtilityService utilityService) {
+        this.patientService = patientService;
+        this.utilityService = utilityService;
+    }
+
+    // 1. Get Patient Details by Token
+    @GetMapping("/{token}")
+    public Object getPatient(@PathVariable String token) {
+        ResponseEntity<Map<String, String>> validation =
+                utilityService.validateToken(token, "patient");
+        if (validation == null) {
+            return patientService.getPatientDetails(token);
+        }
+        return validation;
+    }
+
+    // 2. Create a New Patient
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createPatient(@Valid @RequestBody Patient patient) {
+        if (utilityService.validatePatient(patient)) {
+            return utilityService.error("Patient with email or phone already exists", 409);
+        }
+
+        int result = patientService.createPatient(patient);
+        if (result == 1) {
+            return utilityService.success("Signup successful");
+        } else {
+            return utilityService.error("Internal server error", 500);
+        }
+    }
+
+    // 3. Patient Login
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody Login login) {
+        return utilityService.validatePatientLogin(login);
+    }
+
+    // 4. Get Patient Appointments
+    @GetMapping("/{id}/{token}")
+    public Object getPatientAppointments(
+            @PathVariable Long id,
+            @PathVariable String token
+    ) {
+        ResponseEntity<Map<String, String>> validation =
+                utilityService.validateToken(token, "patient");
+        if (validation == null) {
+            return patientService.getPatientAppointment(id, token);
+        }
+        return validation;
+    }
+
+    // 5. Filter Patient Appointments
+    @GetMapping("/filter/{condition}/{name}/{token}")
+    public Object filterPatientAppointments(
+            @PathVariable String condition,
+            @PathVariable String name,
+            @PathVariable String token
+    ) {
+
+        ResponseEntity<Map<String, String>> validation =
+                utilityService.validateToken(token, "patient");
+        if (validation == null) {
+            return utilityService.filterPatient(condition, name, token);
+        }
+        return validation;
+    }
 
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to define it as a REST API controller for patient-related operations.
@@ -44,8 +130,6 @@ public class PatientController {
 //    - Accepts filtering parameters: `condition`, `name`, and a token.
 //    - Token must be valid for a `"patient"` role.
 //    - If valid, delegates filtering logic to the shared service and returns the filtered result.
-
-
 
 }
 

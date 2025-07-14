@@ -1,10 +1,32 @@
 
 package com.project.back_end.controllers;
 
+import com.project.back_end.services.UtilityService;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.back_end.models.Admin;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
 @RestController
+@RequestMapping("${api.path}" + "admin") // Set base path using externalized config
 public class AdminController {
+
+    private final UtilityService utilityService;
+
+    @Autowired
+    public AdminController(UtilityService utilityService) {
+        this.utilityService = utilityService;
+    }
+
+    // Handles POST request for admin login
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> adminLogin(@RequestBody Admin receivedAdmin) {
+        return utilityService.validateAdmin(receivedAdmin);
+    }
 
 // 1. Set Up the Controller Class:
 //    - Annotate the class with `@RestController` to indicate that it's a REST controller, used to handle web requests and return JSON responses.
